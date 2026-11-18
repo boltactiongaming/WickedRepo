@@ -14243,7 +14243,10 @@ void Postprocess_Tonemap(
 	const Texture* texture_distortion,
 	const Texture* texture_luminance,
 	float eyeadaptionkey,
-	const wiGraphics::Texture* lineardepth
+	const wiGraphics::Texture* lineardepth,
+	int visualStyle,
+	int retroEffects,
+	int styleControls
 
 )
 {
@@ -14264,9 +14267,12 @@ void Postprocess_Tonemap(
 	cb.tonemap_eyeadaption = texture_luminance == nullptr ? 0.0f : 1.0f;
 	cb.tonemap_distortion = texture_distortion == nullptr ? 0.0f : 1.0f;
 	cb.tonemap_eyeadaptionkey = eyeadaptionkey;
-	//PE: xPPParams1.z , xPPParams1.w free.
-	//PE: xPPParams1.z = effect.
-	//PE: xPPParams1.w = timer
+	// Dungeoneer DX11 style selector. Keep the shared constant-buffer layout.
+	// Cel requires depth like Grimdark, Toon and Inked. Woodcut optionally uses bound raster depth.
+	cb.tonemap_visualstyle = (visualStyle == 2 || visualStyle == 5 || visualStyle == 6) ? (float)visualStyle :
+		((visualStyle == 1 || visualStyle == 3 || visualStyle == 4 || visualStyle == 7) && lineardepth != nullptr ? (float)visualStyle : 0.0f);
+	cb.tonemap_retroeffects = (float)(retroEffects & 2047);
+	cb.xPPParams2 = XMFLOAT4((float)styleControls, 0.0f, 0.0f, 0.0f);
 	assert(texture_colorgradinglut == nullptr || texture_colorgradinglut->desc.type == TextureDesc::TEXTURE_3D); // This must be a 3D lut
 
 	if (device->CheckCapability(GRAPHICSDEVICE_CAPABILITY_BINDLESS_DESCRIPTORS))

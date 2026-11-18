@@ -651,7 +651,10 @@ namespace wiRenderer
 		const wiGraphics::Texture* texture_distortion = nullptr,
 		const wiGraphics::Texture* texture_luminance = nullptr,
 		float eyeadaptionkey = 0.115f,
-		const wiGraphics::Texture* lineardepth = nullptr
+		const wiGraphics::Texture* lineardepth = nullptr,
+		int visualStyle = 0,
+		int retroEffects = 0,
+		int styleControls = -1
 	);
 	void Postprocess_FSR(
 		const wiGraphics::Texture& input,

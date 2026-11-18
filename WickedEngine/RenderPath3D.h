@@ -74,6 +74,11 @@ private:
 	bool raytracedReflectionsEnabled = false;
 	bool reflectionsEnabled = false;  //PE: was true use our defaults
 	bool shadowsEnabled = true;
+	int styleControls[8] = { -1, 6416, 6432, -1, -1, 22800, 22788, -1 };
+	float vhsStaticStrength = 25.0f;
+	int vhsGrainSize = 1;
+	int retroEffects = 0; // bit 0: VHS, bit 1: CRT
+	int visualStyle = 0; // DX11: 0 = None, 1 = Grimdark / Posterized, 2 = PS1, 3 = Toon, 4 = Inked, 5 = EGA / Dithered, 6 = Woodcut, 7 = Cel / Posterized
 	bool bloomEnabled = true;
 	bool colorGradingEnabled = true;
 	bool volumeLightsEnabled = false; //PE: was true use our defaults
@@ -260,6 +265,28 @@ public:
 	constexpr bool getRainEnabled() const { return rainEnabled; }
 	constexpr bool getSnowEnabled() const { return snowEnabled; }
 #endif
+	// Packed integer, exactly representable as float in the tonemap constants.
+	// bits 0..1: toggles, 2..8: strength 0..100, 9..10: grain size minus one.
+	constexpr int getStyleControls() const { return styleControls[visualStyle]; }
+	constexpr void setStyleControls(int mode, int levels, int dither, int size)
+	{
+		if (mode == 1 || mode == 2 || mode == 5 || mode == 6)
+		{
+			levels = levels < 4 ? 4 : (levels > 32 ? 32 : levels);
+			const int maxDither = (mode == 1 || mode == 2) ? 200 : 100;
+			dither = dither < 0 ? 0 : (dither > maxDither ? maxDither : dither);
+			size = size < 1 ? 1 : (size > 3 ? 3 : size);
+			styleControls[mode] = levels | (dither << 6) | ((size - 1) << 14);
+		}
+	}
+	constexpr int getRetroEffects() const { return retroEffects | ((int)(vhsStaticStrength + 0.5f) << 2) | ((vhsGrainSize - 1) << 9); }
+	constexpr void setVHSControls(float strength, int grainSize)
+	{
+		vhsStaticStrength = (strength >= 0.0f && strength <= 100.0f) ? strength : 25.0f;
+		vhsGrainSize = (grainSize >= 1 && grainSize <= 3) ? grainSize : 1;
+	}
+	constexpr void setRetroEffects(int value) { retroEffects = value & 3; }
+	constexpr int getVisualStyle() const { return visualStyle; }
 	constexpr bool getBloomEnabled() const { return bloomEnabled; }
 	constexpr bool getColorGradingEnabled() const { return colorGradingEnabled; }
 	constexpr bool getVolumeLightsEnabled() const { return volumeLightsEnabled; }
@@ -324,6 +351,7 @@ public:
 
 #endif
 
+	constexpr void setVisualStyle(int value) { visualStyle = (value >= 0 && value <= 7) ? value : 0; }
 	constexpr void setBloomEnabled(bool value){ bloomEnabled = value; }
 	constexpr void setColorGradingEnabled(bool value){ colorGradingEnabled = value; }
 	constexpr void setVolumeLightsEnabled(bool value){ volumeLightsEnabled = value; }

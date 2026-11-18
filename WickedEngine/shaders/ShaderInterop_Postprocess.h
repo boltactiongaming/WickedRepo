@@ -12,6 +12,7 @@ CBUFFER(PostProcessCB, CBSLOT_RENDERER_POSTPROCESS)
 	float2 xPPResolution_rcp;
 	float4 xPPParams0;
 	float4 xPPParams1;
+	float4 xPPParams2; // Appended style controls; rebuild all shaders and C++ together.
 };
 
 #define lineardepth_inputresolution xPPParams0.xy
@@ -103,6 +104,9 @@ struct PushConstantsTonemap
 #define tonemap_eyeadaption xPPParams0.w
 #define tonemap_distortion xPPParams1.x
 #define tonemap_eyeadaptionkey xPPParams1.y
+#define tonemap_stylecontrols xPPParams2.x // packed levels/dither/pattern-size, negative uses defaults
+#define tonemap_retroeffects xPPParams1.w // DX11 packed integer: flags bits 0..1, strength bits 2..8, grain bits 9..10
+#define tonemap_visualstyle xPPParams1.z // DX11: 0 = None, 1 = Grimdark / Posterized
 
 #define luminance_adaptionrate xPPParams0.x
 

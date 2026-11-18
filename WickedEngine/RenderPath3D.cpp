@@ -2246,7 +2246,10 @@ void RenderPath3D::RenderPostprocessChain(CommandList cmd) const
 				getMSAASampleCount() > 1 ? &rtParticleDistortion_Resolved : &rtParticleDistortion,
 				getEyeAdaptionEnabled() ? wiRenderer::ComputeLuminance(luminanceResources, *GetGbuffer_Read(GBUFFER_COLOR), cmd, getEyeAdaptionRate()) : nullptr,
 				getEyeAdaptionKey(),
-				&rtLinearDepth
+				&rtLinearDepth,
+				getVisualStyle(),
+				getRetroEffects(),
+				getStyleControls()
 			);
 #else
 			wiRenderer::Postprocess_Tonemap(
@@ -2259,7 +2262,10 @@ void RenderPath3D::RenderPostprocessChain(CommandList cmd) const
 				nullptr,
 				getEyeAdaptionEnabled() ? wiRenderer::ComputeLuminance(luminanceResources, *GetGbuffer_Read(GBUFFER_COLOR), cmd, getEyeAdaptionRate()) : nullptr,
 				getEyeAdaptionKey(),
-				&rtLinearDepth
+				&rtLinearDepth,
+				getVisualStyle(),
+				getRetroEffects(),
+				getStyleControls()
 			);
 #endif
 #ifdef GGREDUCED
@@ -2277,7 +2283,10 @@ void RenderPath3D::RenderPostprocessChain(CommandList cmd) const
 				getMSAASampleCount() > 1 ? &rtParticleDistortion_Resolved : &rtParticleDistortion,
 				getEyeAdaptionEnabled() ? wiRenderer::ComputeLuminance(luminanceResources, *GetGbuffer_Read(GBUFFER_COLOR), cmd, getEyeAdaptionRate()) : nullptr,
 				getEyeAdaptionKey(),
-				&rtLinearDepth
+				&rtLinearDepth,
+				getVisualStyle(),
+				getRetroEffects(),
+				getStyleControls()
 			);
 		}
 #endif
